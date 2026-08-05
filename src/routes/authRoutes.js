@@ -31,10 +31,10 @@ router.post('/register', async (req, res) => {
   } 
 
 
-   if (newFirstname.length < 4 || newLastname.length < 4) {
+   if (newFirstname.length < 3 || newLastname.length < 3) {
       return res.status(400).json({
         fields:"firstName",
-        message:"names should be at least 4 letters long"})
+        message:"names should be at least 3 letters long"})
      }
 
 
@@ -57,7 +57,7 @@ if(existingEmail){
   if (password.length < 6){
     return res.status(400).json({ 
       fields:"password",
-      message:"password is less than 6 characters"})
+      message:"password must be at least 6 characters long"})
      }
 
 
@@ -124,7 +124,7 @@ router.post('/login',  async(req, res) => {
      if (!confirmPassword) {
       return res.status(400).json({
         fields:"password",
-        message:"password Incorrect"})
+        message:"Incorrect password"})
      }
 
       const token = generateToken(userExist._id);
