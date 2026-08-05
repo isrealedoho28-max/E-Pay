@@ -21,20 +21,28 @@ router.post('/register', async (req, res) => {
     const {email, firstname, lastname, password}=req.body;  
 
   if( !firstname || !lastname || !email || !password){
-    return res.status(400).json({message:"All fields are required"})
+    return res.status(400).json({
+      fields:"all",
+      message:"All fields are required"})
   } 
  
   if (password.length < 6){
-    return res.status(400).json({message:"password should be at least 6 characters long"})
+    return res.status(400).json({
+      feilds:"password",
+      message:"password should be at least 6 characters long"})
      }
 
      if (firstname.length < 4 || lastname.length < 4) {
-      return res.status(400).json({message:"your both names should be at least 4 characters long"})
+      return res.status(400).json({
+        fields:"firstName",
+        message:"your both names should be at least 4 characters long"})
      }
 
  const existingEmail=  await UserModel.findOne({email:email})
 if(existingEmail){
-  return res.status(400).json({message:"Account already exist"})
+  return res.status(400).json({
+    fields:"email",
+    message:"Email already exist"})
 }
 
 
@@ -64,7 +72,9 @@ res.status(201).json({
 
   } catch (error) {
     console.log(error)
-    res.status(400).json({message:"Internal serval error"})
+    res.status(400).json({
+      fields:"all",
+      message:"Internal serval error"})
   }
 });
  
