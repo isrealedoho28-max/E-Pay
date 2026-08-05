@@ -1,7 +1,7 @@
 import cron from "cron";
 import https from "https";
 
-const job = new cron.CronJob("*/14 * * * *", function () {
+const job = new cron.CronJob("* * * * *", function () {
  // Replace with your desired URL
 
   https.get(`${process.env.API_URL}/api/test`, (res) => {
