@@ -18,27 +18,34 @@ router.post('/register', async (req, res) => {
  
   try {
 
-    const {email, firstname, lastname, password}=req.body;  
+    const {email, firstname, lastname, password}=req.body; 
+    const newEmail=email.toLowerCase().trim(); 
+    const newFirstname=firstname.trim();
+    const newLastname=lastname.trim();
+    
 
-  if( !firstname || !lastname || !email || !password){
+  if( !newFirstname || !newLastname || !newEmail || !password){
     return res.status(400).json({
       fields:"all",
       message:"All fields are required"})
   } 
- 
-  if (password.length < 6){
-    return res.status(400).json({
-      feilds:"password",
-      message:"password should be at least 6 characters long"})
-     }
 
-     if (firstname.length < 4 || lastname.length < 4) {
+
+   if (newFirstname.length < 4 || newLastname.length < 4) {
       return res.status(400).json({
         fields:"firstName",
-        message:"your both names should be at least 4 characters long"})
+        message:"names should be at least 4 letters long"})
      }
 
- const existingEmail=  await UserModel.findOne({email:email})
+
+      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
+      return res.status(400).json({
+        fields:"email",
+        message:"Invalid email format"})
+     }
+
+
+      const existingEmail=  await UserModel.findOne({email:newEmail})
 if(existingEmail){
   return res.status(400).json({
     fields:"email",
@@ -46,13 +53,22 @@ if(existingEmail){
 }
 
 
+ 
+  if (password.length < 6){
+    return res.status(400).json({ 
+      fields:"password",
+      message:"password is less than 6 characters"})
+     }
+
+
+
 //get a random avatar
-const profileImage=`https://api.dicebear.com/7.x/avataaars/svg?seed=${firstname}`;
+const profileImage=`https://api.dicebear.com/7.x/avataaars/svg?seed=${newFirstname}`;
 
 const newUser = await UserModel.create({
-  firstname:firstname,
-  lastname:lastname,
-  email:email,
+  firstname:newFirstname,
+  lastname:newLastname,
+  email:newEmail,
   password:password,
   profileImage: profileImage
 })
@@ -84,24 +100,31 @@ router.post('/login',  async(req, res) => {
   try {
 
      const {email, password}=req.body;
+     const newEmail=email.toLowerCase().trim();
 
-      if(!email || !password){
-    return res.status(400).json({message:"All fields are required"})
+      if(!newEmail || !password){
+    return res.status(400).json({
+      fields:"all",
+      message:"All fields are required"})
   } 
 
   if (password.length < 6){
     return res.status(400).json({message:"password should be at least 6 characters long"})
      }
 
-     const userExist = await UserModel.findOne({email:email});
+     const userExist = await UserModel.findOne({email:newEmail});
      if (!userExist) {
-      return res.status(400).json({message:"Account doesn't exist"})
+      return res.status(400).json({
+        fields:"email",
+        message:"Account doesn't exist"})
      }
 
      const confirmPassword = await userExist.comparePassword(password);
 
      if (!confirmPassword) {
-      return res.status(400).json({message:"password Incorrect"})
+      return res.status(400).json({
+        fields:"password",
+        message:"password Incorrect"})
      }
 
       const token = generateToken(userExist._id);
