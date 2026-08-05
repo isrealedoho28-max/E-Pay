@@ -19,6 +19,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/test', test);
 
+app.get('/', (req, res)=>{
+  res.send("E-Pay backend is Ready")
+})
 
 
 app.listen(port, () => {
