@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  accountNumber:{
+   type:String
+  },
   balance:{
    type: Number,
    default:0

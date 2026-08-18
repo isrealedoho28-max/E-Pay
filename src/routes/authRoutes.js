@@ -12,6 +12,9 @@ const generateToken = (userid) => {
  return jwt.sign({userid}, secret, {expiresIn:"1m"} )
 }
 
+function generateNumber(){
+return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
+}
 
 
 router.post('/register', async (req, res) => {
@@ -22,6 +25,7 @@ router.post('/register', async (req, res) => {
     const newEmail=email.toLowerCase().trim(); 
     const newFirstname=firstname.trim();
     const newLastname=lastname.trim();
+    const accountNumber;
     
 
   if( !newFirstname || !newLastname || !newEmail || !password){
@@ -65,12 +69,24 @@ if(existingEmail){
 //get a random avatar
 const profileImage=`https://api.dicebear.com/7.x/avataaars/svg?seed=${newFirstname}`;
 
+while(true){
+  const acNumber= generateNumber()
+  const existingUser= await UserModel.findOne({accountNumber:acNumber})
+
+  if(!existingUser){
+accountNumber=acNumber;
+break;
+  }
+}
+
+
 const newUser = await UserModel.create({
   firstname:newFirstname,
   lastname:newLastname,
   email:newEmail,
   password:password,
-  profileImage: profileImage
+  profileImage: profileImage,
+  accountNumber: accountNumber,
 })
 
 const token = generateToken(newUser._id)
@@ -83,7 +99,8 @@ res.status(201).json({
     lastname: newUser.lastname,
     email:newUser.email,
     profileImage:newUser.profileImage,
-    balance: newUser.balance
+    balance: newUser.balance,
+    accountNumber: newUser.accountNumber,
   }
 })
 
@@ -138,7 +155,8 @@ router.post('/login',  async(req, res) => {
     lastname: userExist.lastname,
     email:userExist.email,
     profileImage:userExist.profileImage,
-    balance: userExist.balance
+    balance: userExist.balance,
+    accountNumber: newUser.accountNumber,
         }
       })
      
