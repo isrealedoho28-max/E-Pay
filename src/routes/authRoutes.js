@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
     const newEmail=email.toLowerCase().trim(); 
     const newFirstname=firstname.trim();
     const newLastname=lastname.trim();
-    const accountNumber;
+    let accountNumber;
     
 
   if( !newFirstname || !newLastname || !newEmail || !password){
