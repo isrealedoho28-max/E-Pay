@@ -9,7 +9,7 @@ import UserModel from '../models/userModel.js';
 const secret= process.env.JWT_SECRET
 
 const generateToken = (userid) => { 
- return jwt.sign({userid}, secret, {expiresIn:"15d"} )
+ return jwt.sign({userid}, secret, {expiresIn:"1m"} )
 }
 
 
@@ -82,7 +82,8 @@ res.status(201).json({
     firstname: newUser.firstname,
     lastname: newUser.lastname,
     email:newUser.email,
-    profileImage:newUser.profileImage
+    profileImage:newUser.profileImage,
+    balance: newUser.balance
   }
 })
 
@@ -136,7 +137,8 @@ router.post('/login',  async(req, res) => {
     firstname: userExist.firstname,
     lastname: userExist.lastname,
     email:userExist.email,
-    profileImage:userExist.profileImage
+    profileImage:userExist.profileImage,
+    balance: userExist.balance
         }
       })
      
