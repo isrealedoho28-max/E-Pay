@@ -19,7 +19,7 @@ router.post('/contact', async (req, res)=>{
     if (!newEmail) {
       return res.status(400).json({
         fields:"email",
-        err:"Please provide your email"
+        message:"Please provide your email"
       })
     }
 
@@ -28,13 +28,13 @@ router.post('/contact', async (req, res)=>{
       if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
       return res.status(400).json({
         fields:"email",
-        err:"Invalid email format"})
+       message:"Invalid email format"})
      }
 
      if (message) {
       return res.status(400).json({
         fields:"message",
-        err:"Please provide a message"
+        message:"Please provide a message"
       })
     }
 
@@ -51,7 +51,7 @@ router.post('/contact', async (req, res)=>{
     if (error) {
       console.log("resend error")
       return res.status(500).json({
-        err:"message not sent try again."
+        message:"message not sent try again."
       })
     }
 
@@ -62,7 +62,7 @@ router.post('/contact', async (req, res)=>{
   } catch (error) {
     return res.status(500).json(
       {
-        err:"Something went wrong"
+        message:"Something went wrong"
       }
     )
 
