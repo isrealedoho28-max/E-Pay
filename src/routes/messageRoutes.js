@@ -31,7 +31,7 @@ router.post('/contact', async (req, res)=>{
        message:"Invalid email format"})
      }
 
-     if (message) {
+     if (!message) {
       return res.status(400).json({
         fields:"message",
         message:"Please provide a message"
