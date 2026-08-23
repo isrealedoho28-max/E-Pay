@@ -7,7 +7,7 @@ import {connectDB} from './lib/db.js';
 import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js"
 import test from "./routes/test.js"
-
+import messageRoutes from "./routes/messageRoutes.js"
 const app = express();
 const port = process.env.PORT || 3000; 
 
@@ -18,7 +18,7 @@ app.use(cors())
 app.use('/api/auth', authRoutes); 
 app.use('/api/activities', activityRoutes);
 app.use('/api/test', test);
-
+app.use('/api/message', messageRoutes )
 app.get('/', (req, res)=>{
   res.send("E-Pay backend is Ready")
 })
