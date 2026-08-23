@@ -44,8 +44,7 @@ router.post('/contact', async (req, res)=>{
       to:process.env.MY_EMAIL,
       replyTo:newEmail,
       subject:"transfer issue",
-      text:`User Email: ${newEmail}
-      message: ${message}`,
+      text:message,
     })
 
     if (error) {
