@@ -50,11 +50,13 @@ router.post('/contact', async (req, res)=>{
     if (error) {
       console.log("resend error")
       return res.status(500).json({
+        fields:"all",
         message:"message not sent try again."
       })
     }
 
     return res.status(200).json({
+      fields:"success",
       message:"Message sent successfully"
     })
     
