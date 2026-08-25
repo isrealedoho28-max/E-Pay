@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema({
   accountNumber:{
    type:String
   },
+
+  cardNumber:{
+type:String
+  },
+
+  expireDate:{
+ type:String
+  },
+
   balance:{
    type: Number,
    default:0

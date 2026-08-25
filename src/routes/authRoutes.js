@@ -16,6 +16,14 @@ function generateNumber(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
 
+function card(){
+return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
+}
+
+function expireded(){
+return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
+}
+
 
 router.post('/register', async (req, res) => {
  
@@ -26,7 +34,8 @@ router.post('/register', async (req, res) => {
     const newFirstname=firstname.trim();
     const newLastname=lastname.trim();
     let accountNumber;
-    
+    let cardNumber;
+    let expireDate;
 
   if( !newFirstname || !newLastname || !newEmail || !password){
     return res.status(400).json({
@@ -70,11 +79,15 @@ if(existingEmail){
 const profileImage=`https://api.dicebear.com/7.x/avataaars/svg?seed=${newFirstname}`;
 
 while(true){
-  const acNumber= generateNumber()
+  const acNumber= generateNumber();
+  const card = card();
+  const expired= expireded()
   const existingUser= await UserModel.findOne({accountNumber:acNumber})
 
   if(!existingUser){
 accountNumber=acNumber;
+ cardNumber=card;
+ expireDate=expired;
 break;
   }
 }
@@ -87,6 +100,8 @@ const newUser = await UserModel.create({
   password:password,
   profileImage: profileImage,
   accountNumber: accountNumber,
+  cardNumber:cardNumber,
+  expireDate:expireDate,
 })
 
 const token = generateToken(newUser._id)
@@ -101,6 +116,8 @@ res.status(201).json({
     profileImage:newUser.profileImage,
     balance: newUser.balance,
     accountNumber: newUser.accountNumber,
+    cardNumber : newUser.cardNumber,
+    expireDate: newUser.expireDate,
   }
 })
 
@@ -157,6 +174,8 @@ router.post('/login',  async(req, res) => {
     profileImage:userExist.profileImage,
     balance: userExist.balance,
     accountNumber: newUser.accountNumber,
+    cardNumber: newUser.cardNumber,
+    expireDate:newUser.expireDate,
         }
       })
      
