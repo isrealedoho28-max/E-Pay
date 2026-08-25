@@ -118,6 +118,7 @@ res.status(201).json({
     accountNumber: newUser.accountNumber,
     cardNumber : newUser.cardNumber,
     expireDate: newUser.expireDate,
+    isAdmin: newUser.isAdmin,
   }
 })
 
@@ -176,6 +177,7 @@ router.post('/login',  async(req, res) => {
     accountNumber: newUser.accountNumber,
     cardNumber: newUser.cardNumber,
     expireDate:newUser.expireDate,
+     isAdmin: newUser.isAdmin,
         }
       })
      
@@ -183,7 +185,7 @@ router.post('/login',  async(req, res) => {
     
   } catch (error) {
     console.log(error)
-    res.status(400).json({message:"internal server error"})
+    res.status(400).json({message: `${error.message} internal server error`})
   }
 });
 
