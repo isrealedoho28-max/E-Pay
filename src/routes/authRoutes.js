@@ -174,10 +174,10 @@ router.post('/login',  async(req, res) => {
     email:userExist.email,
     profileImage:userExist.profileImage,
     balance: userExist.balance,
-    accountNumber: newUser.accountNumber,
-    cardNumber: newUser.cardNumber,
-    expireDate:newUser.expireDate,
-     isAdmin: newUser.isAdmin,
+    accountNumber: userExist.accountNumber,
+    cardNumber: userExist.cardNumber,
+    expireDate:userExist.expireDate,
+     isAdmin: userExist.isAdmin,
         }
       })
      
