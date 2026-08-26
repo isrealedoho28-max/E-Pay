@@ -16,11 +16,11 @@ function generateNumber(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
 
-function card(){
+function cardDigit(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
 
-function expireded(){
+function expiredDigit(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
 
@@ -80,8 +80,8 @@ const profileImage=`https://api.dicebear.com/7.x/avataaars/svg?seed=${newFirstna
 
 while(true){
   const acNumber= generateNumber();
-  const card = card();
-  const expired= expireded()
+  const card = cardDigit();
+  const expired= expiredDigit()
   const existingUser= await UserModel.findOne({accountNumber:acNumber})
 
   if(!existingUser){
@@ -185,7 +185,7 @@ router.post('/login',  async(req, res) => {
     
   } catch (error) {
     console.log(error)
-    res.status(400).json({message: `${error.message} internal server error`})
+    res.status(400).json({message: error.message})
   }
 });
 
