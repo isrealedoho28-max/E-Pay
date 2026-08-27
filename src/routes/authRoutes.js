@@ -3,6 +3,7 @@ import express from 'express';
 const router = express.Router();
 
 import jwt from "jsonwebtoken"
+import bcrypt, { compare } from "bcryptjs"
 
 import UserModel from '../models/userModel.js';
 
@@ -188,6 +189,36 @@ router.post('/login',  async(req, res) => {
     res.status(400).json({message: error.message})
   }
 });
+
+
+router.post('/password', async (req, res)=>{
+
+  try {
+    const {password, email} = req.body;
+
+    const checkEmail= await UserModel.findOne({email:email})
+   
+    const comparePass= await bcrypt.compare(password, checkEmail.password)
+   
+    if (comparePass){
+      return res.status(200).json({
+        message:"password correct"
+      })
+    }else{
+      return res.status(400).json({
+        message:"Password Incorrect"
+      })
+    }
+
+    
+  } catch (error) {
+    return res.status(500).json(error.message)
+  }
+
+
+
+
+})
 
  
 export default router;
