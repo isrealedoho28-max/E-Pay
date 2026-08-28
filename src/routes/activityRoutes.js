@@ -222,4 +222,28 @@ res.status(500).json({
 
 
 
+
+router.get('/history', protectRoutes, async (req, res)=>{
+try {
+  const history = await HistoryModel.find({
+    user: req.user._id,
+  }).sort({date:-1});
+
+  return res.status(200).json({
+    success:true,
+    history,
+  })
+
+
+} catch (error) {
+  
+  return res.status(500).json({
+    message:"internal server error",
+  })
+}
+
+})
+
+
+
 export default router
