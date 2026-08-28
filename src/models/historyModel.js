@@ -6,7 +6,7 @@ user:{
    ref: "User",
    required: true
   },
-  recieverName:{
+  receiver:{
     type: String,
     required: true,
   },

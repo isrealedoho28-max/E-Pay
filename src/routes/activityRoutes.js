@@ -1,119 +1,225 @@
 import express from "express"
 import cloudinary from "../lib/cloudinary.js";
+import UserModel from "../models/userModel.js";
 import HistoryModel from "../models/historyModel.js";
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router()
 
-//create book
-router.post('/', protectRoutes, async (req, res)=>{
+const historyData = [
+  {
+    id: 1,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Citibank",
+    amount: 56000,
+    status: "received",
+    date: new Date("2025-08-12"),
+  },
 
-  try {
-   const id= req.user._id
+  {
+    id: 2,
+    receiver: "Michael Anderson",
+    bankName: "Wells Fargo",
+    amount: 7800,
+    status: "sent",
+    date: new Date("2025-07-28"),
+  },
 
-    const {title, caption, rating, image}= req.body;
+  {
+    id: 3,
+    receiver: "Sophia Williams",
+    bankName: "Chase",
+    amount: 4200,
+    status: "received",
+    date: new Date("2025-07-11"),
+  },
 
-    if(!image || !title || !caption || !rating){
-    return  res.status(400).json({message:"please provide all fields"})
-    }
+  {
+    id: 4,
+    receiver: "Olivia Martinez",
+    bankName: "PayPal",
+    amount: 6500,
+    status: "sent",
+    date: new Date("2025-06-24"),
+  },
 
-    //upload image to cloudinary
-const imageUpload= await cloudinary.uploader.upload(image);
-const imageString = imageUpload.secure_url;
+  {
+    id: 5,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Bank of America",
+    amount: 36000,
+    status: "received",
+    date: new Date("2025-06-03"),
+  },
 
-const newBook = await BookModel.create({
-  title:title,
-  caption: caption,
-  rating: rating,
-  image: imageString,
-  user: id
-})
+  {
+    id: 6,
+    receiver: "Daniel Thompson",
+    bankName: "Citibank",
+    amount: 9200,
+    status: "sent",
+    date: new Date("2025-05-19"),
+  },
 
-res.status(201).json(newBook)
-  } catch (error) {
-    console.log('error creating book.... internal server problem ')
-    res.status(400).json({message:"error adding book to database....   internal sever error"})
+  {
+    id: 7,
+    receiver: "Emma Johnson",
+    bankName: "Wells Fargo",
+    amount: 5300,
+    status: "received",
+    date: new Date("2025-05-02"),
+  },
+
+  {
+    id: 8,
+    receiver: "James Wilson",
+    bankName: "Chase",
+    amount: 11800,
+    status: "sent",
+    date: new Date("2025-04-17"),
+  },
+
+  {
+    id: 9,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Payoneer",
+    amount: 56000,
+    status: "received",
+    date: new Date("2025-04-01"),
+  },
+
+  {
+    id: 10,
+    receiver: "Isabella Davis",
+    bankName: "Citibank",
+    amount: 7400,
+    status: "sent",
+    date: new Date("2025-03-14"),
+  },
+
+  {
+    id: 11,
+    receiver: "William Brown",
+    bankName: "PayPal",
+    amount: 4600,
+    status: "received",
+    date: new Date("2025-02-26"),
+  },
+
+  {
+    id: 12,
+    receiver: "Ava Miller",
+    bankName: "Bank of America",
+    amount: 12500,
+    status: "sent",
+    date: new Date("2025-02-08"),
+  },
+
+  {
+    id: 13,
+    receiver: "Benjamin Taylor",
+    bankName: "Wells Fargo",
+    amount: 6800,
+    status: "sent",
+    date: new Date("2025-01-21"),
+  },
+
+  {
+    id: 14,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Chase",
+    amount: 36000,
+    status: "received",
+    date: new Date("2024-11-29"),
+  },
+
+  {
+    id: 15,
+    receiver: "Charlotte Moore",
+    bankName: "Citibank",
+    amount: 8700,
+    status: "sent",
+    date: new Date("2024-11-07"),
+  },
+
+  {
+    id: 16,
+    receiver: "Henry Jackson",
+    bankName: "Payoneer",
+    amount: 5200,
+    status: "sent",
+    date: new Date("2024-10-16"),
+  },
+
+  {
+    id: 17,
+    receiver: "Amelia White",
+    bankName: "Wells Fargo",
+    amount: 3900,
+    status: "received",
+    date: new Date("2024-09-23"),
+  },
+];
+
+router.post('/addHistory', async (req, res)=>{
+
+try {
+  const {email} =req.body;
+
+const newEmail=email.toLowerCase().trim(); 
+
+  if(!newEmail){
+    return res.status(400).json({
+      message:"Please provide user email"
+    })
   }
-})
 
+  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
+      return res.status(400).json({
+        message:"Invalid email format"})
+     }
 
+  const user = await UserModel.findOne({email:newEmail});
 
-
-router.get('/', protectRoutes, async (req, res)=>{
-
-  try {
-    const page = req.query.page || 1;
-    const limit= req.query.limit || 5;
-    const skip = (page -1)* limit;
-
-    const books= await BookModel.find().sort({createdAt: -1}).skip(skip).limit(limit)
-    .populate("user", "username profileImage");
-
-  const totalBooks= await BookModel.countDocuments()
-   res.send({
-    books,
-    currentPage:page,
-    totalBooks,
-    totalPages: Math.ceil(totalBooks / limit),
-   })
-
-  } catch (error) {
-    console.log(error.message, 'internal server error')
-    res.status(400).json({message:"internal server error"})
+  if (!user) {
+    return res.status(404).json({
+      message:"user not found"
+    })
   }
-})
 
+  const existHistory = await HistoryModel.findOne({user:user._id})
 
-router.get('/user', protectRoutes, async (req, res)=>{
-  try {
- const id= req.user._id;
-
- const books = (await BookModel.find({user:id})).sort({createdAt: -1});
- res.json(books)
-    
-  } catch (error) {
-    console.log(error, 'internal server error')
-    res.status(500).json({message:"server error"})
+  if (existHistory) {
+    return res.status(400).json({
+      message:"this user already has transfer history"
+    })
   }
+
+const historyWithUser = historyData.map((item)=>({
+  ...item,
+  user:user._id
+}))
+
+const history = await HistoryModel.insertMany(historyWithUser);
+
+res.status(200).json({
+  success:"History Added Successfully"
 })
 
 
-router.delete('/:id', protectRoutes, async (req, res)=>{
-
-  try {
-    const id = req.params.id;
-    
-    const book = await BookModel.findById(id);
-    if(!book){
-      return res.status(404).json({message:"book not food"})
-    }
-
-    if(book.user.toString() !== req.user._id.toString()){
-  return res.status(400).json({
-    message:"unauthorized request"
-  })
-    }
-
-    //delete image from cloudinary as well
-   if(book.image && book.image.includes("cloudinary")){
-    try {
-      
-      const publicId = book.image.split("/").pop().split(".")[0]
-      await cloudinary.uploader.destroy(publicId);
-
-    } catch (error) {
-      console.log(error.message, 'error deleting image from cloudinary')
-    }
-   }
+} catch (error) {
 
 
-await book.deleteOne();
-res.status(200).json({message:"Book Deleted"})
+  
+res.status(500).json({
+      message: "Internal server error",
+    });
 
-  } catch (error) {
-    console.log(error.message)
-    res.status(500).json({message:"internal server error"})
-  }
+
+}
+
+
 })
+
 
 
 export default router
