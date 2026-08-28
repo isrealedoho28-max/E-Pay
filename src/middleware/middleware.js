@@ -29,7 +29,7 @@ const protectRoutes = async (req, res, next)=>{
   } catch (error) {
 
     console.log(error.message)
-    res.status(401).json({message:"token is not valid"});
+    res.status(401).json(error.message);
   
   }
 }

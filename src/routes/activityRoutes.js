@@ -211,7 +211,7 @@ res.status(200).json({
 
   
 res.status(500).json({
-      message: "Internal server error",
+      message: "Internal server error", error,
     });
 
 
