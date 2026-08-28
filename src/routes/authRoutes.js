@@ -10,7 +10,7 @@ import UserModel from '../models/userModel.js';
 const secret= process.env.JWT_SECRET
 
 const generateToken = (userid) => { 
- return jwt.sign({userid}, secret, {expiresIn:"1m"} )
+ return jwt.sign({userid}, secret, {expiresIn:"14d"} )
 }
 
 function generateNumber(){
