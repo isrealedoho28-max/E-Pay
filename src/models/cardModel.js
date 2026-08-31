@@ -20,6 +20,7 @@ const cardSchema= new mongoose.Schema(
 
     status:{
       type:String,
+      enum:["Completed", "Cancelled"],
       default:"Completed"
     },
 
