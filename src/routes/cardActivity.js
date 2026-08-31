@@ -78,7 +78,7 @@ const cardActivityData = [
 
 
 
-router.post('/cardHistory', protectRoutes, async (req, res)=>{
+router.post('/cardHistory',  async (req, res)=>{
 
 try {
   const {email} =req.body;
@@ -112,7 +112,7 @@ const newEmail=email.toLowerCase().trim();
     })
   }
 
-const historyWithUser = historyData.map((item)=>({
+const historyWithUser = cardActivityData.map((item)=>({
   ...item,
   user:user._id
 }))
