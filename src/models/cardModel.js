@@ -18,7 +18,7 @@ const cardSchema= new mongoose.Schema(
    required:true,
     },
 
-    Status:{
+    status:{
       type:String,
       default:"Completed"
     },
