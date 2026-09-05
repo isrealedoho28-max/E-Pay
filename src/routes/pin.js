@@ -26,7 +26,7 @@ router.post('/createPin', protectRoutes, async (req, res) => {
     if (!pin2 ) {
       return res.status(400).json({
         field: "pin2",
-        message: "Please provide a pin",
+        message: "Please confirm your pin",
       });
     }
 
