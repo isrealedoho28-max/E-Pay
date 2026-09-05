@@ -53,6 +53,7 @@ router.post('/createPin', protectRoutes, async (req, res) => {
 
     if (pin1 !== pin2) {
       return res.status(400).json({
+        field: "all",
         message: "Pins do not match",
       });
     }
