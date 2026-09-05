@@ -14,9 +14,31 @@ router.post('/createPin', protectRoutes, async (req, res) => {
     const { pin1, pin2 } = req.body;
     const userId = req.user._id;
 
+  const existingPin = await PinModel.findOne({ user: userId });
+
+    if (existingPin) {
+      return res.status(400).json({
+        message: "You already have a pin",
+      });
+    }
+
     if (!pin1 ) {
       return res.status(400).json({
         message: "Please provide a pin",
+      });
+    }
+
+    if( pin1.length < 4 ){
+      return res.status(400).json({
+        field: "pin1",
+        message: "Pin must be 4 digits",
+      });
+    }
+
+    if( pin2.length < 4 ){
+      return res.status(400).json({
+        field: "pin2",
+        message: "Pin must be 4 digits",
       });
     }
 
@@ -26,13 +48,7 @@ router.post('/createPin', protectRoutes, async (req, res) => {
       });
     }
 
-    const existingPin = await PinModel.findOne({ user: userId });
-
-    if (existingPin) {
-      return res.status(400).json({
-        message: "You already have a pin",
-      });
-    }
+  
 
     const newPin = await PinModel.create({
       user: userId,
