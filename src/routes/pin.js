@@ -14,14 +14,7 @@ router.post('/createPin', protectRoutes, async (req, res) => {
     const { pin1, pin2 } = req.body;
     const userId = req.user._id;
 
-  const existingPin = await PinModel.findOne({ user: userId });
-
-    if (existingPin) {
-      return res.status(400).json({
-        field: "all",
-        message: "You already have a pin",
-      });
-    }
+  
 
     if (!pin1 ) {
       return res.status(400).json({
@@ -58,6 +51,14 @@ router.post('/createPin', protectRoutes, async (req, res) => {
       });
     }
 
+    const existingPin = await PinModel.findOne({ user: userId });
+
+    if (existingPin) {
+      return res.status(400).json({
+        field: "all",
+        message: "You already have a pin",
+      });
+    }
   
 
     const newPin = await PinModel.create({
