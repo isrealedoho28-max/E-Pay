@@ -18,12 +18,21 @@ router.post('/createPin', protectRoutes, async (req, res) => {
 
     if (existingPin) {
       return res.status(400).json({
+        field: "all",
         message: "You already have a pin",
       });
     }
 
     if (!pin1 ) {
       return res.status(400).json({
+        field: "pin1",
+        message: "Please provide a pin",
+      });
+    }
+
+    if (!pin2 ) {
+      return res.status(400).json({
+        field: "pin2",
         message: "Please provide a pin",
       });
     }
