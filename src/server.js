@@ -9,6 +9,7 @@ import activityRoutes from "./routes/activityRoutes.js"
 import cardActivity from "./routes/cardActivity.js"
 import test from "./routes/test.js"
 import messageRoutes from "./routes/messageRoutes.js"
+import pin from "./routes/pin.js"
 const app = express();
 const port = process.env.PORT || 3000; 
 
@@ -21,6 +22,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/card', cardActivity);
 app.use('/api/test', test);
 app.use('/api/message', messageRoutes )
+app.use('/api/bankpin', pin)
 app.get('/', (req, res)=>{
   res.send("E-Pay backend is Ready")
 })
