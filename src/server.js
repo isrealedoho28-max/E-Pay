@@ -7,6 +7,7 @@ import {connectDB} from './lib/db.js';
 import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js"
 import cardActivity from "./routes/cardActivity.js"
+import addBalance from "./routes/addBalance.js"
 import test from "./routes/test.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import pin from "./routes/pin.js"
@@ -23,6 +24,7 @@ app.use('/api/card', cardActivity);
 app.use('/api/test', test);
 app.use('/api/message', messageRoutes )
 app.use('/api/bankpin', pin)
+app.use('/api/addMoney', addBalance)
 app.get('/', (req, res)=>{
   res.send("E-Pay backend is Ready")
 })

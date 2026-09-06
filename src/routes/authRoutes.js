@@ -1,5 +1,5 @@
 import express from 'express';
-
+import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
 import jwt from "jsonwebtoken"
@@ -220,5 +220,42 @@ router.post('/password', async (req, res)=>{
 
 })
 
+
+
+router.get('/userData', protectRoutes, async(req, res)=>{
+try {
+const userId= req.user._id;
+
+const userInfo= await UserModel.findById(userId);
+
+if(!userInfo){
+  return res.status(404).json({
+    message:"user data not found"
+  })
+}
+
+return res.status(200).json({
+  success:"well done",
+user:{
+       _id:userInfo._id,
+    firstname: userInfo.firstname,
+    lastname: userInfo.lastname,
+    email:userInfo.email,
+    profileImage:userInfo.profileImage,
+    balance: userInfo.balance,
+    accountNumber: userInfo.accountNumber,
+    cardNumber: userInfo.cardNumber,
+    expireDate:userInfo.expireDate,
+     isAdmin: userInfo.isAdmin,
+        }
+})
+
+  
+} catch (error) {
+  return res.status(500).json({
+    message:error.message
+  })
+}
+})
  
 export default router;
