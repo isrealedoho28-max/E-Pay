@@ -62,7 +62,7 @@ const histData= await HistoryModel.create({
   user:userId,
   receiver:`${newFirstname}  ${newLastname}`,
   bankName:newBankname,
-  amount:amount,
+  amount:newAmount,
   date:Date.now()
 })
 
