@@ -2,9 +2,9 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/testing', (req, res) => {
+router.get('/', (req, res) => {
   console.log('Test route accessed');
-  res.json({ message: 'Test route is working!' });
+  res.status(200).json({ message: 'Test route is working!' });
   
 });
 
