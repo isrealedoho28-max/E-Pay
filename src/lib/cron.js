@@ -57,7 +57,7 @@ continue;
 
 
 
-  https.get(`${process.env.API_URL}/api/test`, (res) => {
+  https.get(`${process.env.API_URL}/api/test/testing`, (res) => {
     if(res.statusCode=== 200){console.log(`Cron job executed. Status code: ${res.statusCode}`);}
     else{ console.log(`Get request failed. Status code: ${res.statusCode}`);}
   }).on("error", (err) => {
