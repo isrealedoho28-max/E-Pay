@@ -11,6 +11,7 @@ import addBalance from "./routes/addBalance.js"
 import test from "./routes/test.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import makeTransfer from "./routes/makeTransfer.js"
+import profileimage from "./routes/profileimage.js"
 import pin from "./routes/pin.js"
 const app = express();
 const port = process.env.PORT || 3000; 
@@ -27,6 +28,7 @@ app.use('/api/message', messageRoutes )
 app.use('/api/bankpin', pin)
 app.use('/api/transfer', makeTransfer)
 app.use('/api/addMoney', addBalance)
+app.use('/api/profile', profileimage)
 app.get('/', (req, res)=>{
   res.send("E-Pay backend is Ready")
 })
