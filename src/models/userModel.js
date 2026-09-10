@@ -42,6 +42,11 @@ type:String
     default:""
   },
 
+  profileIcon:{
+    type:String,
+    default:""
+  },
+
    isAdmin:{
     type:Boolean,
     default:false
