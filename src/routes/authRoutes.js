@@ -173,7 +173,7 @@ router.post('/login',  async(req, res) => {
     firstname: userExist.firstname,
     lastname: userExist.lastname,
     email:userExist.email,
-    profileImage:userInfo.profileImage,
+    profileImage:userExist.profileImage,
   profileIcon:userExist.profileIcon,
     balance: userExist.balance,
     accountNumber: userExist.accountNumber,
