@@ -100,7 +100,7 @@ if(error){
   })
   return res.status(500).json({
     fields:"all",
-    message:"Somehting went wrong"
+    message:error.message
   })
 }
 
