@@ -5,12 +5,45 @@ const router = express.Router();
 import jwt from "jsonwebtoken";
 import bcrypt, { compare } from "bcryptjs";
 import {Resend} from "resend";
+import nodemailer from "nodemailer";
 
 import UserModel from '../models/userModel.js';
 import EmailModel from '../models/emailModel.js';
 
+
 const secret= process.env.JWT_SECRET;
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MY_EMAIL,
+    pass: process.env.APP_PASSWORD,
+  },
+});
+
+async function sendTestEmail(newEamil, code) {
+  try {
+    const info = await transporter.sendMail({
+      from: `"E-Pay" <${process.env.MY_EMAIL}>`,
+      to:newEamil,
+      subject: "Your E-Pay verification code",
+      text:`Here is your 6-digit verification code ${code}`
+    });
+
+    
+  } catch (error) {
+return error.message;
+  }
+}
+
+
+
+
+
+
 
 const generateToken = (userid) => { 
  return jwt.sign({userid}, secret, {expiresIn:"14d"} )
@@ -86,15 +119,10 @@ await EmailModel.create({
   code:code,
   expiresAt:expiresAt
 })
-     
-const {data, error} = await resend.emails.send({
-  from:"E-Pay  <onboarding@resend.dev>",
-  to:newEmail,
-  subject:"Your E-Pay verification code",
-  text:`Here is your 6-digit verification code ${code}`
-})
 
-if(error){
+sendTestEmail(newEmail, code)
+
+if(!sendTestEmail){
   await  EmailModel.deleteOne({
     email:newEmail
   })
