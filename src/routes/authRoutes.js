@@ -2,12 +2,15 @@ import express from 'express';
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
-import jwt from "jsonwebtoken"
-import bcrypt, { compare } from "bcryptjs"
+import jwt from "jsonwebtoken";
+import bcrypt, { compare } from "bcryptjs";
+import {Resend} from "resend";
 
 import UserModel from '../models/userModel.js';
+import EmailModel from '../models/emailModel.js';
 
-const secret= process.env.JWT_SECRET
+const secret= process.env.JWT_SECRET;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const generateToken = (userid) => { 
  return jwt.sign({userid}, secret, {expiresIn:"14d"} )
@@ -26,17 +29,15 @@ return  Math.floor(1000000000+Math.random()*9000000000).toString();
 }
 
 
-router.post('/register', async (req, res) => {
- 
-  try {
 
-    const {email, firstname, lastname, password}=req.body; 
+
+router.post('/verify', async (req, res)=>{
+try {
+   const {email, firstname, lastname, password}=req.body; 
     const newEmail=email.toLowerCase().trim(); 
     const newFirstname=firstname.trim();
     const newLastname=lastname.trim();
-    let accountNumber;
-    let cardNumber;
-    let expireDate;
+ 
 
   if( !newFirstname || !newLastname || !newEmail || !password){
     return res.status(400).json({
@@ -44,6 +45,7 @@ router.post('/register', async (req, res) => {
       message:"All fields are required"})
   } 
 
+  
 
    if (newFirstname.length < 3 || newLastname.length < 3) {
       return res.status(400).json({
@@ -51,15 +53,13 @@ router.post('/register', async (req, res) => {
         message:"names should be at least 3 letters long"})
      }
 
-
-      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
+     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
       return res.status(400).json({
         fields:"email",
         message:"Invalid email format"})
      }
 
-
-      const existingEmail=  await UserModel.findOne({email:newEmail})
+           const existingEmail=  await UserModel.findOne({email:newEmail})
 if(existingEmail){
   return res.status(400).json({
     fields:"email",
@@ -67,13 +67,82 @@ if(existingEmail){
 }
 
 
- 
-  if (password.length < 6){
+ if (password.length < 6){
     return res.status(400).json({ 
       fields:"password",
       message:"password must be at least 6 characters long"})
      }
 
+const code= Math.floor(100000+Math.random()*900000).toString();
+
+const expiresAt= new Date(Date.now()+ 10*60*1000);
+
+await EmailModel.deleteMany({
+  email:newEmail
+});
+
+await EmailModel.create({
+  email:newEmail,
+  code:code,
+  expiresAt:expiresAt
+})
+     
+const {data, error} = await resend.emails.send({
+  from:"E-Pay  <onboarding@resend.dev>",
+  to:newEmail,
+  subject:"Your E-Pay verification code",
+  text:`Here is your 6-digit verification code ${code}`
+})
+
+if(error){
+  await  EmailModel.deleteOne({
+    email:newEmail
+  })
+  return res.status(500).json({
+    fields:"all",
+    message:"Somehting went wrong"
+  })
+}
+
+return res.status(200).json({
+  success:"Email sent"
+})
+
+} catch (error) {
+  return res.status(500).json({
+    fields:"all",
+    message:"server error"
+  })
+}
+})
+
+
+router.post('/register', async (req, res) => {
+ 
+
+  try {
+
+    const {email, firstname, lastname, password, code}=req.body; 
+    const newEmail=email.toLowerCase().trim(); 
+    const newFirstname=firstname.trim();
+    const newLastname=lastname.trim();
+    const newCode = code.trim()
+    let accountNumber;
+    let cardNumber;
+    let expireDate;
+
+    const checkCode = await EmailModel.findOne({email:newEmail})
+    if(checkCode.code===""){
+      return res.status(404).json({
+        message:"Invalid code / Expired "
+      })
+    }
+
+    if(checkCode.code!==code){
+  return res.status(400).json({
+    message:"Wrong code"
+  })
+    }
 
 
 //get a random avatar
@@ -126,8 +195,7 @@ res.status(201).json({
   } catch (error) {
     console.log(error)
     res.status(400).json({
-      fields:"all",
-      message:"Internal serval error"})
+      message:"Something went wrong"})
   }
 });
  
