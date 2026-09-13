@@ -24,20 +24,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendTestEmail(newEamil, code) {
-  try {
-    const info = await transporter.sendMail({
-      from: `"E-Pay" <${process.env.MY_EMAIL}>`,
-      to:newEamil,
-      subject: "Your E-Pay verification code",
-      text:`Here is your 6-digit verification code ${code}`
-    });
 
-    
-  } catch (error) {
-return error.message;
-  }
-}
 
 
 
@@ -63,86 +50,112 @@ return  Math.floor(1000000000+Math.random()*9000000000).toString();
 
 
 
+router.post('/verify', async (req, res) => {
+  try {
+    const { email, firstname, lastname, password } = req.body;
 
-router.post('/verify', async (req, res)=>{
-try {
-   const {email, firstname, lastname, password}=req.body; 
-    const newEmail=email.toLowerCase().trim(); 
-    const newFirstname=firstname.trim();
-    const newLastname=lastname.trim();
- 
+    const newEmail = email.toLowerCase().trim();
+    const newFirstname = firstname.trim();
+    const newLastname = lastname.trim();
 
-  if( !newFirstname || !newLastname || !newEmail || !password){
-    return res.status(400).json({
-      fields:"all",
-      message:"All fields are required"})
-  } 
-
-  
-
-   if (newFirstname.length < 3 || newLastname.length < 3) {
+    if (!newFirstname || !newLastname || !newEmail || !password) {
       return res.status(400).json({
-        fields:"firstName",
-        message:"names should be at least 3 letters long"})
-     }
+        fields: "all",
+        message: "All fields are required"
+      });
+    }
 
-     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
+    if (newFirstname.length < 3 || newLastname.length < 3) {
       return res.status(400).json({
-        fields:"email",
-        message:"Invalid email format"})
-     }
+        fields: "firstName",
+        message: "names should be at least 3 letters long"
+      });
+    }
 
-           const existingEmail=  await UserModel.findOne({email:newEmail})
-if(existingEmail){
-  return res.status(400).json({
-    fields:"email",
-    message:"Email already exist"})
-}
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
+      return res.status(400).json({
+        fields: "email",
+        message: "Invalid email format"
+      });
+    }
 
+    const existingEmail = await UserModel.findOne({
+      email: newEmail
+    });
 
- if (password.length < 6){
-    return res.status(400).json({ 
-      fields:"password",
-      message:"password must be at least 6 characters long"})
-     }
+    if (existingEmail) {
+      return res.status(400).json({
+        fields: "email",
+        message: "Email already exist"
+      });
+    }
 
-const code= Math.floor(100000+Math.random()*900000).toString();
+    if (password.length < 6) {
+      return res.status(400).json({
+        fields: "password",
+        message: "password must be at least 6 characters long"
+      });
+    }
 
-const expiresAt= new Date(Date.now()+ 10*60*1000);
+    const code = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
-await EmailModel.deleteMany({
-  email:newEmail
+    const expiresAt = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    await EmailModel.deleteMany({
+      email: newEmail
+    });
+
+    await EmailModel.create({
+      email: newEmail,
+      code: code,
+      expiresAt: expiresAt
+    });
+
+    try {
+      await transporter.sendMail({
+        from: `"E-Pay" <${process.env.MY_EMAIL}>`,
+        to: newEmail,
+        subject: "Your E-Pay verification code",
+        text: `Here is your 6-digit verification code: ${code}
+
+This code will expire in 10 minutes.
+
+If you did not request this code, you can ignore this email.`
+      });
+
+    } catch (error) {
+
+      await EmailModel.deleteOne({
+        email: newEmail
+      });
+
+      console.error("Email sending error:", error);
+
+      return res.status(500).json({
+        message: "Could not send verification email"
+      });
+    }
+
+    return res.status(200).json({
+      success: "Email sent"
+    });
+
+  } catch (error) {
+
+    console.error("Server error:", error);
+
+    return res.status(500).json({
+      fields: "all",
+      message: "server error"
+    });
+  }
 });
 
-await EmailModel.create({
-  email:newEmail,
-  code:code,
-  expiresAt:expiresAt
-})
 
-sendTestEmail(newEmail, code)
-
-if(!sendTestEmail){
-  await  EmailModel.deleteOne({
-    email:newEmail
-  })
-  return res.status(500).json({
-    fields:"all",
-    message:error.message
-  })
-}
-
-return res.status(200).json({
-  success:"Email sent"
-})
-
-} catch (error) {
-  return res.status(500).json({
-    fields:"all",
-    message:"server error"
-  })
-}
-})
 
 
 router.post('/register', async (req, res) => {
