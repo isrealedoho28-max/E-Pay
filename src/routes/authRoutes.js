@@ -146,15 +146,15 @@ router.post('/verify', async (req, res) => {
       email: newEmail
     });
 
-    await EmailModel.create({
+    const createEmail= await EmailModel.create({
       email: newEmail,
       code: code,
       expiresAt: expiresAt
     });
 
-    try {
-      await transporter.sendMail({
-        from: `"E-Pay" <${process.env.MY_EMAIL}>`,
+   
+    const sender =  await transporter.sendMail({
+        from: `"E-Pay" <${myEmail}>`,
         to: newEmail,
         subject: "Your E-Pay verification code",
         text: `Here is your 6-digit verification code: ${code}
@@ -164,18 +164,12 @@ This code will expire in 10 minutes.
 If you did not request this code, you can ignore this email.`
       });
 
-    } catch (error) {
-
-      await EmailModel.deleteOne({
-        email: newEmail
-      });
-
-      console.error("Email sending error:", error);
-
-      return res.status(500).json({
-        message: "Could not send verification email"
-      });
-    }
+      if(!sender){
+        return res.status(400).json({
+          fields:"all",
+          message:"error sending verify code"
+        })
+      }
 
     return res.status(200).json({
       success: "Email sent"
@@ -183,11 +177,15 @@ If you did not request this code, you can ignore this email.`
 
   } catch (error) {
 
+     await EmailModel.deleteOne({
+        email: newEmail
+      });
+
     console.error("Server error:", error);
 
     return res.status(500).json({
       fields: "all",
-      message: "server error"
+      message: "server error, error sending code"
     });
   }
 });
