@@ -1,30 +1,28 @@
 import express from 'express';
+import nodemailer from "nodemailer";
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
 import jwt from "jsonwebtoken";
 import bcrypt, { compare } from "bcryptjs";
-import nodemailer from "nodemailer";
+
 
 import UserModel from '../models/userModel.js';
 import EmailModel from '../models/emailModel.js';
 
 
 const secret= process.env.JWT_SECRET;
-
+const myEmail =process.env.MY_EMAIL
+const appPass =process.env.APP_PASSWORD
 
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  service: "gmail",
+
   auth: {
-    user: process.env.MY_EMAIL,
-    pass: process.env.APP_PASSWORD,
+    user: myEmail,
+    pass: appPass,
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
 });
 
 
@@ -58,8 +56,8 @@ router.get('/test-email', async (req, res) => {
     console.log("Starting email test...");
 
     const info = await transporter.sendMail({
-      from: `"E-Pay" <${process.env.MY_EMAIL}>`,
-      to: process.env.MY_EMAIL,
+      from: `"E-Pay" <${myEmail}>`,
+      to: "isrealedoho28@gmail.com",
       subject: "E-Pay Test Email",
       text: "If you received this email, Nodemailer is working on Render."
     });
