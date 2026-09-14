@@ -6,6 +6,14 @@ console.log("DNS order:", dns.getDefaultResultOrder());
 dns.setDefaultResultOrder("ipv4first");
 
 console.log("DNS order after:", dns.getDefaultResultOrder());
+
+dns.lookup("smtp.gmail.com", { family: 4 }, (err, address) => {
+  if (err) {
+    console.log("IPv4 DNS ERROR:", err);
+  } else {
+    console.log("GMAIL IPV4:", address);
+  }
+});
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
