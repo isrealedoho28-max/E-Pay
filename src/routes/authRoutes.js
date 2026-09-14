@@ -4,7 +4,6 @@ const router = express.Router();
 
 import jwt from "jsonwebtoken";
 import bcrypt, { compare } from "bcryptjs";
-import {Resend} from "resend";
 import nodemailer from "nodemailer";
 
 import UserModel from '../models/userModel.js';
@@ -12,7 +11,7 @@ import EmailModel from '../models/emailModel.js';
 
 
 const secret= process.env.JWT_SECRET;
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 
 
@@ -22,6 +21,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.MY_EMAIL,
     pass: process.env.APP_PASSWORD,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
 
@@ -47,6 +49,38 @@ return  Math.floor(1000000000+Math.random()*9000000000).toString();
 function expiredDigit(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
+
+
+router.get('/test-email', async (req, res) => {
+  try {
+
+    console.log("Starting email test...");
+
+    const info = await transporter.sendMail({
+      from: `"E-Pay" <${process.env.MY_EMAIL}>`,
+      to: process.env.MY_EMAIL,
+      subject: "E-Pay Test Email",
+      text: "If you received this email, Nodemailer is working on Render."
+    });
+
+    console.log("Email sent:", info.messageId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Test email sent",
+      messageId: info.messageId
+    });
+
+  } catch (error) {
+
+    console.error("EMAIL TEST ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
 
 
 
