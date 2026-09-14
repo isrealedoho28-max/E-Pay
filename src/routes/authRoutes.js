@@ -88,12 +88,16 @@ router.get('/test-email', async (req, res) => {
 
 
 router.post('/verify', async (req, res) => {
-  try {
-    const { email, firstname, lastname, password } = req.body;
+ const { email, firstname, lastname, password } = req.body;
 
     const newEmail = email.toLowerCase().trim();
     const newFirstname = firstname.trim();
     const newLastname = lastname.trim();
+
+  try {
+   
+
+    console.log(newEmail)
 
     if (!newFirstname || !newLastname || !newEmail || !password) {
       return res.status(400).json({
