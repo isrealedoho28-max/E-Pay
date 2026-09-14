@@ -16,18 +16,34 @@ const myEmail =process.env.MY_EMAIL
 const appPass =process.env.APP_PASSWORD
 
 
-const transporter = nodemailer.createTransport({
+const transporter465 = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: myEmail,
+    pass: appPass,
+  },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
+
+
+
+const transporter587 = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false,
   auth: {
-    user: process.env.MY_EMAIL,
-    pass: process.env.APP_PASSWORD,
+    user: myEmail,
+    pass: appPass,
   },
-    connectionTimeout: 15000,
-  greetingTimeout: 15000,
-  socketTimeout: 15000,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
+
 
 
 
@@ -89,6 +105,7 @@ router.get('/test-email', async (req, res) => {
 
 router.post('/verify', async (req, res) => {
  const { email, firstname, lastname, password } = req.body;
+ let sender;
 
     const newEmail = email.toLowerCase().trim();
     const newFirstname = firstname.trim();
@@ -157,16 +174,58 @@ router.post('/verify', async (req, res) => {
     });
 
    
-    const sender =  await transporter.sendMail({
-        from: `"E-Pay" <${myEmail}>`,
-        to: newEmail,
-        subject: "Your E-Pay verification code",
-        text: `Here is your 6-digit verification code: ${code}
+    
+
+let sender;
+
+try {
+  console.log("Trying Gmail SMTP port 465...");
+
+  sender = await transporter465.sendMail({
+    from: `"E-Pay" <${myEmail}>`,
+    to: newEmail,
+    subject: "Your E-Pay verification code",
+    text: `Here is your 6-digit verification code: ${code}
 
 This code will expire in 10 minutes.
 
 If you did not request this code, you can ignore this email.`
-      });
+  });
+
+  console.log("Email sent using port 465");
+
+} catch (error465) {
+
+  console.log("Port 465 failed:", error465.message);
+  console.log("Trying Gmail SMTP port 587...");
+
+  try {
+
+    sender = await transporter587.sendMail({
+      from: `"E-Pay" <${myEmail}>`,
+      to: newEmail,
+      subject: "Your E-Pay verification code",
+      text: `Here is your 6-digit verification code: ${code}
+
+This code will expire in 10 minutes.
+
+If you did not request this code, you can ignore this email.`
+    });
+
+    console.log("Email sent using port 587");
+
+  } catch (error587) {
+
+    console.log("Port 587 failed:", error587.message);
+
+    throw new Error("Could not connect to Gmail SMTP using port 465 or 587");
+  }
+}
+
+
+
+
+
 
       if(!sender){
         return res.status(400).json({
