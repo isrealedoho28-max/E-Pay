@@ -1,5 +1,7 @@
 import express from 'express';
+import dns from "dns";
 import nodemailer from "nodemailer";
+dns.setDefaultResultOrder("ipv4first");
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
@@ -16,7 +18,7 @@ const myEmail =process.env.MY_EMAIL
 const appPass =process.env.APP_PASSWORD
 
 
-const transporter465 = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
@@ -24,24 +26,9 @@ const transporter465 = nodemailer.createTransport({
     user: myEmail,
     pass: appPass,
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
-
-
-
-const transporter587 = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: myEmail,
-    pass: appPass,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 15000,
 });
 
 
@@ -173,15 +160,11 @@ router.post('/verify', async (req, res) => {
       expiresAt: expiresAt
     });
 
-   
-    
-
-let sender;
 
 try {
   console.log("Trying Gmail SMTP port 465...");
 
-  sender = await transporter465.sendMail({
+  sender = await transporter.sendMail({
     from: `"E-Pay" <${myEmail}>`,
     to: newEmail,
     subject: "Your E-Pay verification code",
@@ -198,28 +181,6 @@ If you did not request this code, you can ignore this email.`
 
   console.log("Port 465 failed:", error465.message);
   console.log("Trying Gmail SMTP port 587...");
-
-  try {
-
-    sender = await transporter587.sendMail({
-      from: `"E-Pay" <${myEmail}>`,
-      to: newEmail,
-      subject: "Your E-Pay verification code",
-      text: `Here is your 6-digit verification code: ${code}
-
-This code will expire in 10 minutes.
-
-If you did not request this code, you can ignore this email.`
-    });
-
-    console.log("Email sent using port 587");
-
-  } catch (error587) {
-
-    console.log("Port 587 failed:", error587.message);
-
-    throw new Error("Could not connect to Gmail SMTP using port 465 or 587");
-  }
 }
 
 
