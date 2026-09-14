@@ -24,9 +24,6 @@ const transporter = nodemailer.createTransport({
     user: process.env.MY_EMAIL,
     pass: process.env.APP_PASSWORD,
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
 });
 
 
@@ -216,7 +213,7 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    if(checkCode.code!==code){
+    if(checkCode.code!==newCode){
   return res.status(400).json({
     message:"Wrong code"
   })
