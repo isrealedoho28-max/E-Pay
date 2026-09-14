@@ -1,7 +1,11 @@
 import express from 'express';
 import dns from "dns";
 import nodemailer from "nodemailer";
+console.log("DNS order:", dns.getDefaultResultOrder());
+
 dns.setDefaultResultOrder("ipv4first");
+
+console.log("DNS order after:", dns.getDefaultResultOrder());
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
