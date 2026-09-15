@@ -1,19 +1,5 @@
 import express from 'express';
-import dns from "dns";
 import nodemailer from "nodemailer";
-console.log("DNS order:", dns.getDefaultResultOrder());
-
-dns.setDefaultResultOrder("ipv4first");
-
-console.log("DNS order after:", dns.getDefaultResultOrder());
-
-dns.lookup("smtp.gmail.com", { family: 4 }, (err, address) => {
-  if (err) {
-    console.log("IPv4 DNS ERROR:", err);
-  } else {
-    console.log("GMAIL IPV4:", address);
-  }
-});
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
@@ -26,25 +12,38 @@ import EmailModel from '../models/emailModel.js';
 
 
 const secret= process.env.JWT_SECRET;
-const myEmail =process.env.MY_EMAIL
-const appPass =process.env.APP_PASSWORD
+const emailUrl =process.env.EMAIL_URL
+const emailSecret =process.env.EMAIL_SECRET
 
 
-const transporter = nodemailer.createTransport({
-  host: "142.251.185.109",
-  port: 465,
-  secure: true,
-  auth: {
-    user: myEmail,
-    pass: appPass,
-  },
-  tls: {
-    servername: "smtp.gmail.com",
-  },
-  connectionTimeout: 15000,
-  greetingTimeout: 15000,
-  socketTimeout: 15000,
-});
+
+async function sendEmail(to, subject, text) {
+  const response = await fetch(emailUrl, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      secret: emailSecret,
+      to: to,
+      subject: subject,
+      text: text
+    })
+  });
+
+
+  const result = await response.json();
+
+
+  if (!result.success) {
+    throw new Error(result.message || "Email sending failed");
+  }
+
+
+  return result;
+}
 
 
 
@@ -70,39 +69,6 @@ return  Math.floor(1000000000+Math.random()*9000000000).toString();
 function expiredDigit(){
 return  Math.floor(1000000000+Math.random()*9000000000).toString(); 
 }
-
-
-router.get('/test-email', async (req, res) => {
-  try {
-
-    console.log("Starting email test...");
-
-    const info = await transporter.sendMail({
-      from: `"E-Pay" <${myEmail}>`,
-      to: "isrealedoho28@gmail.com",
-      subject: "E-Pay Test Email",
-      text: "If you received this email, Nodemailer is working on Render."
-    });
-
-    console.log("Email sent:", info.messageId);
-
-    return res.status(200).json({
-      success: true,
-      message: "Test email sent",
-      messageId: info.messageId
-    });
-
-  } catch (error) {
-
-    console.error("EMAIL TEST ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
 
 
 router.post('/verify', async (req, res) => {
@@ -177,27 +143,25 @@ router.post('/verify', async (req, res) => {
 
 
 try {
-  console.log("Trying Gmail SMTP port 465...");
+  console.log("Sending verification email...");
 
-  sender = await transporter.sendMail({
-    from: `"E-Pay" <${myEmail}>`,
-    to: newEmail,
-    subject: "Your E-Pay verification code",
-    text: `Here is your 6-digit verification code: ${code}
+  sender = await sendEmail(
+    newEmail,
+    "Your E-Pay verification code",
+    `Here is your 6-digit verification code: ${code}
 
 This code will expire in 10 minutes.
 
-If you did not request this code, you can ignore this email.`
-  });
+If you did not request this code, you can ignore this email.` 
+  );
 
-  console.log("Email sent using port 465");
+  console.log("Verification email sent successfully");
 
-} catch (error465) {
+} catch (emailError) {
 
-  console.log("Port 465 failed:", error465.message);
-  console.log("Trying Gmail SMTP port 587...");
+  console.error("EMAIL BRIDGE ERROR:", emailError);
+
 }
-
 
 
 
