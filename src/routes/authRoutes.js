@@ -323,16 +323,6 @@ router.post('/login',  async(req, res) => {
       Date.now() + 10 * 60 * 1000
     );
 
-    await EmailModel.deleteMany({
-      email: newEmail
-    });
-
-    const createEmail= await EmailModel.create({
-      email: newEmail,
-      code: code,
-      expiresAt: expiresAt
-    });
-
 
 try {
   console.log("Sending verification email...");
@@ -356,10 +346,23 @@ If you did not request this code, you can ignore this email.`
 }
 
 
+    await EmailModel.deleteMany({
+      email: newEmail
+    });
+
+    const createEmail= await EmailModel.create({
+      email: newEmail,
+      code: code,
+      expiresAt: expiresAt
+    });
 
 
 
       if(!sender){
+ await EmailModel.deleteOne({
+        email: newEmail
+      });
+
         return res.status(400).json({
           fields:"all",
           message:"error sending verify code"
@@ -450,7 +453,7 @@ user:{
 
 router.post('/verifyLog', async (req, res) => {
  const {email, code } = req.body;
- let sender;
+ 
 
     const newEmail = email.toLowerCase().trim();
     const newCode = code.trim()
