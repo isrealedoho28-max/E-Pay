@@ -211,9 +211,15 @@ router.post('/register', async (req, res) => {
     let expireDate;
 
     const checkCode = await EmailModel.findOne({email:newEmail})
-    if(checkCode.code===""){
+    if(!checkCode.code){
       return res.status(404).json({
         message:"Invalid code / Expired "
+      })
+    }
+
+    if(!newCode){
+      return res.status(400).json({
+        message:"please input code"
       })
     }
 
@@ -280,11 +286,12 @@ res.status(201).json({
  
  
 router.post('/login',  async(req, res) => {
-
+   let sender;
+   const {email, password}=req.body;
+  const newEmail=email.toLowerCase().trim();
   try {
 
-     const {email, password}=req.body;
-     const newEmail=email.toLowerCase().trim();
+  
 
       if(!newEmail || !password){
     return res.status(400).json({
@@ -292,9 +299,6 @@ router.post('/login',  async(req, res) => {
       message:"All fields are required"})
   } 
 
-  if (password.length < 6){
-    return res.status(400).json({message:"password should be at least 6 characters long"})
-     }
 
      const userExist = await UserModel.findOne({email:newEmail});
      if (!userExist) {
@@ -311,25 +315,60 @@ router.post('/login',  async(req, res) => {
         message:"Incorrect password"})
      }
 
-      const token = generateToken(userExist._id);
+     const code = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
-      res.status(201).json({
-        token,
-        user:{
-       _id:userExist._id,
-    firstname: userExist.firstname,
-    lastname: userExist.lastname,
-    email:userExist.email,
-    profileImage:userExist.profileImage,
-  profileIcon:userExist.profileIcon,
-    balance: userExist.balance,
-    accountNumber: userExist.accountNumber,
-    cardNumber: userExist.cardNumber,
-    expireDate:userExist.expireDate,
-     isAdmin: userExist.isAdmin,
-        }
-      })
-     
+    const expiresAt = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    await EmailModel.deleteMany({
+      email: newEmail
+    });
+
+    const createEmail= await EmailModel.create({
+      email: newEmail,
+      code: code,
+      expiresAt: expiresAt
+    });
+
+
+try {
+  console.log("Sending verification email...");
+
+  sender = await sendEmail(
+    newEmail,
+    "Your E-Pay verification code",
+    `Here is your 6-digit verification code: ${code}
+
+This code will expire in 10 minutes.
+
+If you did not request this code, you can ignore this email.` 
+  );
+
+  console.log("Verification email sent successfully");
+
+} catch (emailError) {
+
+  console.error("EMAIL BRIDGE ERROR:", emailError);
+
+}
+
+
+
+
+
+      if(!sender){
+        return res.status(400).json({
+          fields:"all",
+          message:"error sending verify code"
+        })
+      }
+
+    return res.status(200).json({
+      success: "Email sent"
+    });
    
     
   } catch (error) {
@@ -406,5 +445,69 @@ user:{
   })
 }
 })
+
+
+
+router.post('/verifyLog', async (req, res) => {
+ const {email, code } = req.body;
+ let sender;
+
+    const newEmail = email.toLowerCase().trim();
+    const newCode = code.trim()
+
+  try {
+   
+        const checkCode = await EmailModel.findOne({email:newEmail})
+    if(!checkCode.code){
+      return res.status(404).json({
+        message:"Invalid code / Expired "
+      })
+    }
+
+    if(!newCode){
+      return res.status(400).json({
+        message:"please input code"
+      })
+    }
+
+    if(checkCode.code!==newCode){
+  return res.status(400).json({
+    message:"Wrong code"
+  })
+    }
+
+    const userExist = await UserModel.findOne({email:newEmail});
+
+    const token = generateToken(userExist._id);
+
+      res.status(201).json({
+        token,
+        user:{
+       _id:userExist._id,
+    firstname: userExist.firstname,
+    lastname: userExist.lastname,
+    email:userExist.email,
+    profileImage:userExist.profileImage,
+  profileIcon:userExist.profileIcon,
+    balance: userExist.balance,
+    accountNumber: userExist.accountNumber,
+    cardNumber: userExist.cardNumber,
+    expireDate:userExist.expireDate,
+     isAdmin: userExist.isAdmin,
+        }
+      })
+     
+
+
+  } catch (error) {
+
+    console.error("Server error:", error);
+
+    return res.status(500).json({
+      fields: "all",
+      message: error.message
+    });
+  }
+});
  
 export default router;
