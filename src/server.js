@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js"
 import cardActivity from "./routes/cardActivity.js"
 import addBalance from "./routes/addBalance.js"
+import notifyRoutes from "./routes/notifyRoutes.js"
 import test from "./routes/test.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import makeTransfer from "./routes/makeTransfer.js"
@@ -26,6 +27,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/card', cardActivity);
 app.use('/api/test', test);
 app.use('/api/message', messageRoutes )
+app.use("/api/notifications", notificationRoutes);
 app.use('/api/bankpin', pin)
 app.use('/api/transfer', makeTransfer)
 app.use('/api/addMoney', addBalance)

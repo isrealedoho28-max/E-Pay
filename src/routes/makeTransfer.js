@@ -5,7 +5,7 @@ import UserModel from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import HistoryModel from "../models/historyModel.js";
 import protectRoutes from "../middleware/middleware.js";
-
+import NotificationModel from "../models/notifyModel.js";
 
 const router = express.Router()
 
@@ -56,6 +56,11 @@ if(accBalance < centAmount){
 
 const newBalance= Number(accBalance - centAmount);
 
+const notBal = (newBalance/100).toLocaleString("en-US", {
+  minimumFractionDigits:2,
+  maximumFractionDigits:2
+})
+
 const updateBal = await UserModel.findOneAndUpdate({_id:userId}, {balance:newBalance},{new:true} )
 
 const histData= await HistoryModel.create({
@@ -65,6 +70,14 @@ const histData= await HistoryModel.create({
   amount:centAmount,
   date:Date.now()
 })
+
+
+await NotificationModel.create({
+  user: userId,
+  title: "Transfer pending",
+  message: `Your transfer of ${notBal} is pending.`,
+  type: "transfer_pending",
+});
 
 return res.status(200).json({success:true})
 

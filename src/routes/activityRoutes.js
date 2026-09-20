@@ -3,6 +3,7 @@ import cloudinary from "../lib/cloudinary.js";
 import UserModel from "../models/userModel.js";
 import HistoryModel from "../models/historyModel.js";
 import protectRoutes from "../middleware/middleware.js";
+import NotificationModel from "../models/notifyModel.js";
 const router = express.Router()
 
 const historyData = [
