@@ -27,7 +27,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/card', cardActivity);
 app.use('/api/test', test);
 app.use('/api/message', messageRoutes )
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/notifications", notifyRoutes);
 app.use('/api/bankpin', pin)
 app.use('/api/transfer', makeTransfer)
 app.use('/api/addMoney', addBalance)

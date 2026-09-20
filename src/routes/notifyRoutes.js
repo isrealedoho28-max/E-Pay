@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 // GET ALL NOTIFICATIONS
-router.get("/notify", protectRoutes, async (req, res) => {
+router.get("/", protectRoutes, async (req, res) => {
   try {
     const notifications = await NotificationModel.find({
       user: req.user._id,
