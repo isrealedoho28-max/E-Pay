@@ -75,7 +75,7 @@ const histData= await HistoryModel.create({
 await NotificationModel.create({
   user: userId,
   title: "Transfer pending",
-  message: `Your transfer of ${notBal} is pending.`,
+  message: `Your transfer of $${notBal} is pending.`,
   type: "transfer_pending",
 });
 
