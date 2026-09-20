@@ -56,7 +56,7 @@ if(accBalance < centAmount){
 
 const newBalance= Number(accBalance - centAmount);
 
-const notBal = (newBalance/100).toLocaleString("en-US", {
+const notBal = (centAmount/100).toLocaleString("en-US", {
   minimumFractionDigits:2,
   maximumFractionDigits:2
 })
