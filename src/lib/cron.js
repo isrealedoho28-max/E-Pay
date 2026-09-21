@@ -3,6 +3,7 @@ import https from "https";
 import UserModel from "../models/userModel.js";
 import HistoryModel from "../models/historyModel.js";
 import NotificationModel from "../models/notifyModel.js";
+import sendPushNotification from "./sendPushNotification.js";
 
 
 const job = new cron.CronJob("* * * * *", async function () {
@@ -46,9 +47,32 @@ continue;
   await NotificationModel.create({
   user: transfer.user,
   title: "Transfer reversed",
-  message: `Your transfer has been reversed and the money has been returned to your balance.`,
+  message: `Your transfer of $${(
+      transfer.amount / 100
+    ).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })} has been reversed and the money has been returned to your balance.`,
   type: "transfer_reversed",
 });
+
+
+const user = await UserModel.findById(
+  transfer.user
+);
+
+if (user?.pushToken) {
+  await sendPushNotification(
+    user.pushToken,
+    "Transfer reversed",
+    `Your transfer of $${(
+      transfer.amount / 100
+    ).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })} was reversed and the money has been returned to your balance.`
+  );
+}
 
   console.log(`Transfer ${transfer._id} reversed.  money returned to user ${userId}`);
 

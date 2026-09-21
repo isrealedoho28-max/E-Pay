@@ -47,6 +47,11 @@ type:String
     default:""
   },
 
+  pushToken:{
+   type:String,
+   default:""
+  },
+
    isAdmin:{
     type:Boolean,
     default:false

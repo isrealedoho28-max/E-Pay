@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import HistoryModel from "../models/historyModel.js";
 import protectRoutes from "../middleware/middleware.js";
 import NotificationModel from "../models/notifyModel.js";
+import sendPushNotification from "../lib/sendPushNotification.js";
 
 const router = express.Router()
 
@@ -78,6 +79,16 @@ await NotificationModel.create({
   message: `Your transfer of $${notBal} is pending.`,
   type: "transfer_pending",
 });
+
+const user = await UserModel.findById(userId);
+
+if (user?.pushToken) {
+  await sendPushNotification(
+    user.pushToken,
+    "Transfer pending",
+    `Your transfer of ${newAmount.toLocaleString()} is pending.`
+  );
+}
 
 return res.status(200).json({success:true})
 
