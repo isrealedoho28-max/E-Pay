@@ -66,7 +66,7 @@ const updateBal = await UserModel.findOneAndUpdate({_id:userId}, {balance:newBal
 
 const histData= await HistoryModel.create({
   user:userId,
-  receiver:`${newFirstname}  ${newLastname}`,
+  receiver:`${newFirstname} ${newLastname}`,
   bankName:newBankname,
   amount:centAmount,
   date:Date.now()
