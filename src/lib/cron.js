@@ -40,7 +40,7 @@ for(const transfer of pendingTransfer){
 continue;
   }
 
-  await HistoryModel.findByIdAndUpdate(transfer._id,{
+ const det= await HistoryModel.findByIdAndUpdate(transfer._id,{
     status:"reversed"
   });
 
@@ -52,7 +52,7 @@ continue;
     ).toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })} has been reversed and the money has been returned to your balance.`,
+    })} to ${det.receiver} has been reversed.`,
   type: "transfer_reversed",
 });
 
@@ -70,7 +70,7 @@ if (user?.pushToken) {
     ).toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })} was reversed and the money has been returned to your balance.`
+    })} to ${det.receiver} was reversed.`
   );
 }
 

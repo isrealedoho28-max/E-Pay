@@ -76,7 +76,7 @@ const histData= await HistoryModel.create({
 await NotificationModel.create({
   user: userId,
   title: "Transfer pending",
-  message: `Your transfer of $${notBal} is pending.`,
+  message: `Your transfer of $${notBal} to ${histData.receiver} is currently pending.`,
   type: "transfer_pending",
 });
 
@@ -86,7 +86,7 @@ if (user?.pushToken) {
   await sendPushNotification(
     user.pushToken,
     "Transfer pending",
-    `Your transfer of ${newAmount.toLocaleString()} is pending.`
+    `Your transfer of $${newAmount.toLocaleString()} to ${histData.receiver}  is currently pending.`
   );
 }
 
