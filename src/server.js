@@ -11,6 +11,7 @@ import cardActivity from "./routes/cardActivity.js"
 import pushRoutes from "./routes/pushRoutes.js";
 import addBalance from "./routes/addBalance.js"
 import notifyRoutes from "./routes/notifyRoutes.js"
+import resetPassword from "./routes/resetPassword.js"
 import test from "./routes/test.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import makeTransfer from "./routes/makeTransfer.js"
@@ -26,6 +27,7 @@ app.use(cors())
 app.use('/api/auth', authRoutes); 
 app.use('/api/activities', activityRoutes);
 app.use('/api/card', cardActivity);
+app.use('/api/reset', resetPassword);
 app.use('/api/test', test);
 app.use('/api/message', messageRoutes )
 app.use("/api/notifications", notifyRoutes);

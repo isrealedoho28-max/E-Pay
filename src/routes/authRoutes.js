@@ -1,5 +1,4 @@
 import express from 'express';
-import nodemailer from "nodemailer";
 import protectRoutes from "../middleware/middleware.js";
 const router = express.Router();
 
