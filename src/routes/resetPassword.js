@@ -95,8 +95,7 @@ try {
     newEmail,
     "E-Pay Password reset code",
     `We received your request to reset your password
-    
-    Please use this code to reset your password: ${code}
+     use this code to reset your password: ${code}
 
 This code will expire in 10 minutes.
 
