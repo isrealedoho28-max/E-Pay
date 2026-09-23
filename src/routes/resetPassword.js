@@ -146,6 +146,12 @@ router.post('/checkCode', async (req, res)=>{
     const {email, code}=req.body
     const newEmail = email.toLowerCase().trim();
   const newCode = code.trim()
+
+   if(!newCode){
+      return res.status(400).json({
+        message:"please input code"
+      })
+    }
    
         const checkCode = await EmailModel.findOne({email:newEmail})
     if(!checkCode.code){
@@ -154,11 +160,6 @@ router.post('/checkCode', async (req, res)=>{
       })
     }
 
-    if(!newCode){
-      return res.status(400).json({
-        message:"please input code"
-      })
-    }
 
     if(checkCode.code!==newCode){
   return res.status(400).json({
