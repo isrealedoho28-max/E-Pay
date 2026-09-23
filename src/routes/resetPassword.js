@@ -61,9 +61,9 @@ if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newEmail)) {
       email: newEmail
     });
 
-    if (existingEmail) {
+    if (!existingEmail) {
       return res.status(400).json({
-        message: "Email already exist"
+        message: "Email doesn't exist"
       });
     }
 
