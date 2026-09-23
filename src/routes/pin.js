@@ -80,6 +80,67 @@ router.post('/createPin', protectRoutes, async (req, res) => {
 
 
 
+router.post('/ResetPin', protectRoutes, async (req, res) => {
+  
+  try {
+    const { pin1, pin2 } = req.body;
+    const userId = req.user._id;
+
+  
+
+    if (!pin1 ) {
+      return res.status(400).json({
+        field: "pin1",
+        message: "Please provide a pin",
+      });
+    }
+
+    if (!pin2 ) {
+      return res.status(400).json({
+        field: "pin2",
+        message: "Please confirm your pin",
+      });
+    }
+
+    if( pin1.length < 4 ){
+      return res.status(400).json({
+        field: "pin1",
+        message: "Pin must be 4 digits",
+      });
+    }
+
+    if (pin1 !== pin2) {
+      return res.status(400).json({
+        field: "all",
+        message: "Pins do not match",
+      });
+    }
+
+  
+
+    const newPin = await PinModel.findByIdAndUpdate(userId, {pin: await bcrypt.hash(pin1, 10),});
+
+    if (!newPin){
+        const createPin = await PinModel.create({
+      user: userId,
+      pin: await bcrypt.hash(pin1, 10),
+    });
+
+  return   res.status(200).json({
+      success: "Pin Created successfully",
+    });
+    }
+    
+  return  res.status(200).json({
+      success: "Pin updated successfully",
+    });
+
+  } catch (error) {
+    console.error("Error creating pin:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 
 
