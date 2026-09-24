@@ -216,7 +216,7 @@ router.post('/newPass', async (req, res)=>{
   
     const harshedPass = await bcrypt.hash(password, salt)
 
-  await UserModel.findOneAndUpdate({email:newEmail}, {password:harshedPass});
+  await UserModel.findOneAndUpdate({email:newEmail}, {password:harshedPass}, {new:true});
 
 return res.status(200).json({
   success:"reset password completed"
