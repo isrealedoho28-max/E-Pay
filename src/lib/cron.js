@@ -10,14 +10,14 @@ const job = new cron.CronJob("* * * * *", async function () {
 
   console.log("cron job is running")
 
-const fiveMinutesAgo = new Date(
-  Date.now()- 5*60*1000
+const sixDaysAgo = new Date(
+  Date.now() - 6 * 24 * 60 * 60 * 1000
 );
 
 const pendingTransfer= await HistoryModel.find({
   status:"..pending",
   date:{
-    $lte: fiveMinutesAgo
+    $lte: sixDaysAgo
   }
 });
 

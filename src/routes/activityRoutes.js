@@ -6,6 +6,8 @@ import protectRoutes from "../middleware/middleware.js";
 import NotificationModel from "../models/notifyModel.js";
 const router = express.Router()
 
+
+
 const historyData = [
   {
     id: 1,
@@ -13,153 +15,187 @@ const historyData = [
     bankName: "Citibank",
     amount: 5600000,
     status: "received",
-    date: new Date("2025-08-12"),
+    date: new Date("2025-11-14"),
   },
-
   {
     id: 2,
     receiver: "Michael Anderson",
     bankName: "Wells Fargo",
-    amount: 780000,
+    amount: 685000,
     status: "sent",
-    date: new Date("2025-07-28"),
+    date: new Date("2025-10-29"),
   },
-
   {
     id: 3,
     receiver: "Sophia Williams",
     bankName: "Chase",
-    amount: 420000,
-    status: "received",
-    date: new Date("2025-07-11"),
+    amount: 920000,
+    status: "sent",
+    date: new Date("2025-10-11"),
   },
-
   {
     id: 4,
-    receiver: "Olivia Martinez",
-    bankName: "PayPal",
-    amount: 650000,
-    status: "sent",
-    date: new Date("2025-06-24"),
+    receiver: "David Harris",
+    bankName: "Bank of America",
+    amount: 430000,
+    status: "received",
+    date: new Date("2025-09-26"),
   },
-
   {
     id: 5,
     receiver: "DFAS Salary Deposit",
-    bankName: "Bank of America",
-    amount: 3600000,
-    status: "received",
-    date: new Date("2025-06-03"),
-  },
-
-  {
-    id: 6,
-    receiver: "Daniel Thompson",
-    bankName: "Citibank",
-    amount: 920000,
-    status: "sent",
-    date: new Date("2025-05-19"),
-  },
-
-  {
-    id: 7,
-    receiver: "Emma Johnson",
     bankName: "Wells Fargo",
-    amount: 530000,
-    status: "received",
-    date: new Date("2025-05-02"),
-  },
-
-  {
-    id: 8,
-    receiver: "James Wilson",
-    bankName: "Chase",
-    amount: 1180000,
-    status: "sent",
-    date: new Date("2025-04-17"),
-  },
-
-  {
-    id: 9,
-    receiver: "DFAS Salary Deposit",
-    bankName: "Payoneer",
     amount: 5600000,
     status: "received",
-    date: new Date("2025-04-01"),
+    date: new Date("2025-09-15"),
   },
-
+  {
+    id: 6,
+    receiver: "Olivia Martinez",
+    bankName: "PayPal",
+    amount: 475000,
+    status: "sent",
+    date: new Date("2025-09-04"),
+  },
+  {
+    id: 7,
+    receiver: "Daniel Thompson",
+    bankName: "Citibank",
+    amount: 540000,
+    status: "sent",
+    date: new Date("2025-08-21"),
+  },
+  {
+    id: 8,
+    receiver: "Robert Carter",
+    bankName: "Bank of America",
+    amount: 365000,
+    status: "received",
+    date: new Date("2025-08-07"),
+  },
+  {
+    id: 9,
+    receiver: "Emma Johnson",
+    bankName: "Chase",
+    amount: 780000,
+    status: "sent",
+    date: new Date("2025-07-24"),
+  },
   {
     id: 10,
-    receiver: "Isabella Davis",
-    bankName: "Citibank",
-    amount: 740000,
-    status: "sent",
-    date: new Date("2025-03-14"),
-  },
-
-  {
-    id: 11,
-    receiver: "William Brown",
-    bankName: "PayPal",
-    amount: 460000,
-    status: "received",
-    date: new Date("2025-02-26"),
-  },
-
-  {
-    id: 12,
-    receiver: "Ava Miller",
-    bankName: "Bank of America",
-    amount: 1250000,
-    status: "sent",
-    date: new Date("2025-02-08"),
-  },
-
-  {
-    id: 13,
-    receiver: "Benjamin Taylor",
-    bankName: "Wells Fargo",
-    amount: 680000,
-    status: "sent",
-    date: new Date("2025-01-21"),
-  },
-
-  {
-    id: 14,
     receiver: "DFAS Salary Deposit",
     bankName: "Chase",
-    amount: 3600000,
+    amount: 5600000,
     status: "received",
-    date: new Date("2024-11-29"),
+    date: new Date("2025-07-15"),
   },
-
+  {
+    id: 11,
+    receiver: "James Wilson",
+    bankName: "Wells Fargo",
+    amount: 325000,
+    status: "sent",
+    date: new Date("2025-06-28"),
+  },
+  {
+    id: 12,
+    receiver: "Christopher Lewis",
+    bankName: "Citibank",
+    amount: 615000,
+    status: "received",
+    date: new Date("2025-06-17"),
+  },
+  {
+    id: 13,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Citibank",
+    amount: 5600000,
+    status: "received",
+    date: new Date("2025-06-13"),
+  },
+  {
+    id: 14,
+    receiver: "Isabella Davis",
+    bankName: "PayPal",
+    amount: 420000,
+    status: "sent",
+    date: new Date("2025-05-26"),
+  },
   {
     id: 15,
-    receiver: "Charlotte Moore",
-    bankName: "Citibank",
-    amount: 870000,
+    receiver: "Benjamin Taylor",
+    bankName: "Chase",
+    amount: 875000,
     status: "sent",
-    date: new Date("2024-11-07"),
+    date: new Date("2025-05-09"),
   },
-
   {
     id: 16,
-    receiver: "Henry Jackson",
-    bankName: "Payoneer",
-    amount: 520000,
-    status: "sent",
-    date: new Date("2024-10-16"),
+    receiver: "DFAS Salary Deposit",
+    bankName: "Bank of America",
+    amount: 5600000,
+    status: "received",
+    date: new Date("2025-04-15"),
   },
-
   {
     id: 17,
-    receiver: "Amelia White",
+    receiver: "Ava Miller",
     bankName: "Wells Fargo",
-    amount: 390000,
+    amount: 510000,
+    status: "sent",
+    date: new Date("2025-03-28"),
+  },
+  {
+    id: 18,
+    receiver: "Charlotte Moore",
+    bankName: "PayPal",
+    amount: 690000,
+    status: "sent",
+    date: new Date("2025-03-11"),
+  },
+  {
+    id: 19,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Wells Fargo",
+    amount: 5600000,
     status: "received",
-    date: new Date("2024-09-23"),
+    date: new Date("2025-02-14"),
+  },
+  {
+    id: 20,
+    receiver: "Matthew Clark",
+    bankName: "Citibank",
+    amount: 395000,
+    status: "sent",
+    date: new Date("2025-01-30"),
+  },
+  {
+    id: 21,
+    receiver: "Robert Carter",
+    bankName: "Chase",
+    amount: 450000,
+    status: "received",
+    date: new Date("2025-01-17"),
+  },
+  {
+    id: 22,
+    receiver: "Daniel Thompson",
+    bankName: "Bank of America",
+    amount: 735000,
+    status: "sent",
+    date: new Date("2024-12-28"),
+  },
+  {
+    id: 23,
+    receiver: "DFAS Salary Deposit",
+    bankName: "Citibank",
+    amount: 5600000,
+    status: "received",
+    date: new Date("2024-12-13"),
   },
 ];
+
+
 
 router.post('/addHistory', async (req, res)=>{
 
